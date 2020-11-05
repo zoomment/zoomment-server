@@ -1,0 +1,28 @@
+{
+  "name": "foo-comments-server",
+  "version": "1.0.0",
+  "description": "Open Source Self-Hosted Comment System",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js --ignore src/widget",
+    "server": "pm2 start ./ecosystem.config.js",
+    "restart": "pm2 restart FOO_COMMENTS",
+    "kill": "pm2 delete FOO_COMMENTS"
+  },
+  "author": "Tigran Simonyan",
+  "license": "ISC",
+  "dependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-1": "^6.24.1",
+    "babel-runtime": "^6.26.0",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv-safe": "^8.2.0",
+    "express": "^4.17.1",
+    "handlebars": "^4.7.6",
+    "mongoose": "^5.10.11"
+  }
+}

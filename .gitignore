@@ -1,0 +1,13 @@
+*node_modules
+npm_debug.log
+/coverage
+/.idea
+/lib/
+.nyc_output
+.env
+.idea
+jsconfig.json
+.vscode
+yarn.lock
+.DS_Store
+*package-lock.json
