@@ -1,20 +1,10 @@
 import Comment from './model';
-import crypto from 'crypto';
 import * as mailer from '../../services/mailer';
 import { asyncRoute } from '../../services/express';
 
 export const add = asyncRoute(async (req, res) => {
   const comment = new Comment({});
-  const secret = crypto.randomBytes(20).toString('hex');
-
-  comment.secret = secret;
-  comment.body = req.body.body;
-  comment.pageId = req.query.pageId;
-  comment.pageUrl = req.body.pageUrl;
-  comment.owner.name = req.body.owner.name;
-  comment.owner.email = req.body.owner.email;
-
-  await comment.save();
+  await comment.insert(req.body).save();
 
   res.json(comment);
   mailer.newCommentNotification(comment);

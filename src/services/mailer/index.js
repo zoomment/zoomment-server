@@ -18,11 +18,16 @@ export async function newCommentNotification(comment) {
     to: process.env.ADMIN_EMAIL_ADDR,
     subject: 'You have a new comment!',
     html: `
-			<div style="padding: 20px; font-size: 14px; line-height: 27px;">
-				<div><b>User:</b> ${comment.owner.name}</div>
-				<div><b>Date:</b> ${date}</div>
-				<div><b>Page:</b> ${comment.pageUrl}</div>	
-				<div><b>Comment:</b> ${comment.body}</div>
+      <div style="padding: 20px;">
+        <div style="font-size: 14px; line-height: 27px;"> 
+          <div><b>User:</b> ${comment.owner.name}</div>
+          <div><b>Date:</b> ${date}</div>
+          <div><b>Page:</b> ${comment.pageUrl}</div>
+          <div><b>Comment:</b> ${comment.body}</div>
+        </div>
+        <div style="padding-top: 20px; font-size: 12px;">
+          [<a href="${process.env.API_URL}/comments/${comment._id}/delete?secret=${comment.secret}">Discard</a>]
+        </div>
 			<div>
 		`,
   });

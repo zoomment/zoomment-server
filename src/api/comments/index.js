@@ -9,4 +9,6 @@ router.post('/', add);
 
 router.delete('/:id', remove);
 
+router.get('/:id/delete', remove);
+
 export default router;
