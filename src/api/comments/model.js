@@ -16,6 +16,10 @@ const schema = new Schema(
         required: true,
       },
     },
+    pageUrl: {
+      type: String,
+      required: true,
+    },
     pageId: {
       type: String,
       required: true,
