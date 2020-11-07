@@ -14,20 +14,20 @@ $ npm install
 Copy and edit the `env` file:
 
 ```
-cp .env.example .env
-vim .env
+$ cp .env.example .env
+$ vim .env
 ```
 
 Run the server:
 
 ```
-npm run server
+$ npm run server
 ```
 
 If you want to stop the server:
 
 ```
-npm run kill
+$ npm run kill
 ```
 
 
