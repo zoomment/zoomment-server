@@ -24,7 +24,7 @@ Run the server:
 npm run server
 ```
 
-If you want to stop server:
+If you want to stop the server:
 
 ```
 npm run kill
