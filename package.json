@@ -25,6 +25,8 @@
     "handlebars": "^4.7.6",
     "moment": "^2.29.1",
     "mongoose": "^5.10.11",
-    "nodemailer": "^6.4.15"
+    "nodemailer": "^6.4.15",
+    "nodemon": "^2.0.6",
+    "pm2": "^4.5.0"
   }
 }

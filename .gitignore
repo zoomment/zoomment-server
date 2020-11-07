@@ -1,5 +1,6 @@
 *node_modules
 npm_debug.log
+logs
 /coverage
 /.idea
 /lib/
