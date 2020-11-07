@@ -1,7 +1,6 @@
 **Requirements**
-- Node.js
-- NPM
-- MongoDB
+- [Node.js](https://nodejs.org/en/)
+- [MongoDB](https://docs.mongodb.com/manual/administration/install-community/)
 
 
 Clone the repository and install dependencies:
@@ -25,6 +24,10 @@ Run the server:
 npm run server
 ```
 
+If you want to stop server:
 
+```
+npm run kill
+```
 
 
