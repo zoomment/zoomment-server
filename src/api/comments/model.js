@@ -6,46 +6,51 @@ const schema = new Schema(
     owner: {
       ip: {
         type: String,
-        required: false,
+        required: false
+      },
+      gravatar: {
+        type: String,
+        required: true
       },
       email: {
         type: String,
-        required: false,
+        required: true
       },
       name: {
         type: String,
-        required: true,
-      },
+        required: true
+      }
     },
     pageUrl: {
       type: String,
-      required: true,
+      required: true
     },
     pageId: {
       type: String,
-      required: true,
+      required: true
     },
     body: {
       type: String,
-      required: true,
+      required: true
     },
     secret: {
       type: String,
-      required: true,
-    },
+      required: true
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 
 schema.methods.insert = function (data) {
-  this.secret = crypto.randomBytes(20).toString('hex');
+  this.owner.gravatar = crypto.createHash('md5').update(data.owner.email).digest('hex');
   this.owner.email = data.owner.email;
   this.owner.name = data.owner.name;
   this.pageUrl = data.pageUrl;
   this.pageId = data.pageId;
   this.body = data.body;
+  this.secret = crypto.randomBytes(20).toString('hex');
   return this;
 };
 

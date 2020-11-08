@@ -12,7 +12,7 @@ export const add = asyncRoute(async (req, res) => {
 
 export const list = asyncRoute(async (req, res) => {
   const comments = await Comment.find({ pageId: req.query.pageId })
-    .select('owner.name body createdAt')
+    .select('owner.name owner.gravatar body createdAt')
     .sort({ createdAt: 'desc' });
 
   res.json(comments);
@@ -21,7 +21,7 @@ export const list = asyncRoute(async (req, res) => {
 export const remove = asyncRoute(async (req, res) => {
   const { deletedCount } = await Comment.deleteOne({
     _id: req.params.id,
-    secret: req.query.secret,
+    secret: req.query.secret
   });
 
   res.sendStatus(deletedCount > 0 ? 200 : 400);
