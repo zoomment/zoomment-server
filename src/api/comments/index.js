@@ -1,11 +1,13 @@
 import { Router } from 'express';
-import { add, list, remove } from './controller';
+import { view, add, list, remove } from './controller';
 
 const router = new Router();
 
 router.get('/', list);
 
 router.post('/', add);
+
+router.get('/:id', view);
 
 router.delete('/:id', remove);
 

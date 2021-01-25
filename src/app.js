@@ -1,14 +1,20 @@
 import mongoose from './services/mongoose';
-import bodyParser from 'body-parser';
+import hbs from './services/handlebars';
 import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
+import path from 'path';
 import api from './api';
 
 const app = express();
 
 mongoose.connect(process.env.MONGODB_URI);
+
+app.engine('hbs', hbs.engine);
+app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'views'));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

@@ -26,3 +26,12 @@ export const remove = asyncRoute(async (req, res) => {
 
   res.sendStatus(deletedCount > 0 ? 200 : 400);
 });
+
+export const view = asyncRoute(async (req, res) => {
+  const comment = await Comment.findById(req.params.id);
+  if (comment) {
+    res.render('comment', comment);
+  } else {
+    res.render('404', comment);
+  }
+});
