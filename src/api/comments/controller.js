@@ -32,6 +32,6 @@ export const view = asyncRoute(async (req, res) => {
   if (comment) {
     res.render('comment', comment);
   } else {
-    res.render('404', comment);
+    res.render('404');
   }
 });
