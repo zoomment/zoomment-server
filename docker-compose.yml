@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+
+  mongo:
+    image: mongo
+    restart: always    
+    volumes:
+      - './mongo-data:/data/db'
+  
+  foo-comment:
+    image: foo-comments-server
+    restart: always
+    volumes:
+      - ./.env.docker:/app/.env:ro
