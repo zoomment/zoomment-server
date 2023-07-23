@@ -1,7 +1,7 @@
 build:
 	docker build -t foo-comments-server .
 
-up: build
+up:
 	docker-compose up -d
 
 
