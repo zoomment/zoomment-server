@@ -1,5 +1,5 @@
 import Reaction from './model';
-import { getReactions } from './helper';
+import { getPageData } from './helper';
 
 import { asyncRoute } from '../../services/express';
 const VIEW = 'view';
@@ -26,7 +26,7 @@ export const reactOrView = asyncRoute(async (req, res) => {
     await new Reaction({ ...searchCondition, reaction }).save();
   }
 
-  const reactions = await getReactions(searchCondition);
+  const reactions = await getPageData(searchCondition);
 
-  return res.status(200).json({ reactions });
+  return res.status(200).json(reactions);
 });
