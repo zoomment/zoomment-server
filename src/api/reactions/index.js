@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { reactOrView } from './controller';
+import { list, add } from './controller';
 
 const router = new Router();
 
-router.post('/', reactOrView);
-router.get('/', reactOrView);
+router.post('/', add);
+router.get('/', list);
 
 export default router;

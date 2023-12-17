@@ -1,9 +1,11 @@
 import Reaction from './model';
 
 export const getPageData = async ({ fingerprint, pageId }) => {
+  const userReactionPromise = Reaction.findOne({
+    fingerprint,
+    pageId
+  }).select('reaction -_id');
 
-  const userReactionPromise = Reaction.findOne({ fingerprint, pageId }).select('reaction -_id');
-  const pageViewsPromise = Reaction.find({ pageId }).count();
   const aggregationPromise = Reaction.aggregate()
     .match({
       pageId
@@ -13,11 +15,10 @@ export const getPageData = async ({ fingerprint, pageId }) => {
       count: { $count: {} }
     });
 
-  const [aggregation, userReaction, pageViews] = await Promise.all([
+  const [aggregation, userReaction] = await Promise.all([
     aggregationPromise,
-    userReactionPromise,
-    pageViewsPromise
+    userReactionPromise
   ]);
 
-  return { aggregation, userReaction, pageViews };
+  return { aggregation, userReaction };
 };
