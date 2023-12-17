@@ -31,3 +31,27 @@ $ npm run kill
 ```
 
 
+## Docker
+
+modify `.env.docker` to run with docker.
+
+### run mongo with docker
+
+```
+make dev
+```
+### build the docker image
+```
+make build
+```
+
+### start/stop system
+To start
+```
+make up
+```
+
+To stop
+```
+make down
+```

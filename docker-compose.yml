@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - './mongo-data:/data/db'
+
+  foo-comment-server:
+    image: foo-comments-server
+    restart: always
+    volumes:
+      - ./.env.docker:/app/.env:ro
+    ports:
+      - 9547:9547
+    depends_on:
+      - mongo
