@@ -7,8 +7,8 @@ services:
     volumes:
       - './mongo-data:/data/db'
 
-  foo-comment-server:
-    image: foo-comments-server
+  zoomment-server:
+    image: zoomment-server
     restart: always
     volumes:
       - ./.env.docker:/app/.env:ro

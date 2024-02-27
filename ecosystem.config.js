@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'FOO_COMMENTS',
+  name: 'ZOOMMENT',
   script: './index.js',
   error_file: './logs/err.log',
   out_file: './logs/out.log',
@@ -8,5 +8,5 @@ module.exports = {
   autorestart: true,
   time: true,
   logDateFormat: 'YYYY-MM-DD HH:mm Z',
-  watch: false,
+  watch: false
 };
