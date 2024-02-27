@@ -1,5 +1,5 @@
 build:
-	docker build -t foo-comments-server .
+	docker build -t zoomment-server .
 
 up:
 	docker-compose up -d

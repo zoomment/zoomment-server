@@ -1,13 +1,13 @@
 {
-  "name": "foo-comments-server",
+  "name": "zoomment-server",
   "version": "1.0.0",
   "description": "Open Source Self-Hosted Comment System",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js --ignore src/widget",
     "server": "pm2 start ./ecosystem.config.js",
-    "restart": "pm2 restart FOO_COMMENTS",
-    "kill": "pm2 delete FOO_COMMENTS"
+    "restart": "pm2 restart ZOOMMENT",
+    "kill": "pm2 delete ZOOMMENT"
   },
   "author": "Tigran Simonyan",
   "license": "ISC",

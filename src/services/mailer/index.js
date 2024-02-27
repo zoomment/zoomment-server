@@ -2,7 +2,9 @@ import nodemailer from 'nodemailer';
 import moment from 'moment';
 
 if (!process.env.ADMIN_EMAIL_ADDR) {
-  console.warn('WARNIGN: ADMIN_EMAIL_ADDR Admin email is not present, you will not be notified about new emails.');
+  console.warn(
+    'WARNIGN: ADMIN_EMAIL_ADDR Admin email is not present, you will not be notified about new emails.'
+  );
 }
 
 const transporter = nodemailer.createTransport({
@@ -21,7 +23,7 @@ export async function newCommentNotification(comment) {
   }
   const date = moment(comment.createdAt).format('DD.MMM.YYYY - HH:mm');
   await transporter.sendMail({
-    from: `"FooCommmets" <${process.env.BOT_EMAIL_ADDR}>`,
+    from: `"Zoomment.com" <${process.env.BOT_EMAIL_ADDR}>`,
     to: process.env.ADMIN_EMAIL_ADDR,
     subject: 'You have a new comment!',
     html: `
