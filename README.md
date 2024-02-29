@@ -18,13 +18,19 @@ $ cp .env.example .env
 $ vim .env
 ```
 
-Run the server:
+Run development:
 
 ```
-$ npm run server
+$ npm run dev
 ```
 
-If you want to stop the server:
+Run production:
+
+```
+$ npm start
+```
+
+Stop production:
 
 ```
 $ npm run kill
