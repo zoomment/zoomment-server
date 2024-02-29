@@ -5,7 +5,7 @@
   "main": "./index.ts",
   "scripts": {
     "dev": "nodemon --watch 'src/**' --ext 'ts,json' --exec 'ts-node ./index.ts'",
-    "start": "pm2 start ./dist/ecosystem.config.js",
+    "start": "npm run build && pm2 start ./dist/ecosystem.config.js",
     "restart": "pm2 restart ZOOMMENT",
     "kill": "pm2 delete ZOOMMENT",
     "build": "tsc",
