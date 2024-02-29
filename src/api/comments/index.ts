@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { add, list, remove } from './controller';
 
-const router = new Router();
+const router = Router();
 
 router.get('/', list);
 

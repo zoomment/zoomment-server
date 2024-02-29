@@ -1,7 +1,8 @@
 import mongoose, { Schema } from 'mongoose';
 import crypto from 'crypto';
+import { TComment } from '@/types';
 
-const schema = new Schema(
+const schema = new Schema<TComment>(
   {
     owner: {
       ip: {
@@ -43,10 +44,14 @@ const schema = new Schema(
   }
 );
 
-schema.methods.insert = function (data) {
-  this.owner.gravatar = crypto.createHash('md5').update(data.owner.email).digest('hex');
-  this.owner.email = data.owner.email;
-  this.owner.name = data.owner.name;
+schema.methods.insert = function (data: Partial<TComment>) {
+  // TODO add validation and fix type
+  this.owner.gravatar = crypto
+    .createHash('md5')
+    .update(data.owner?.email || '')
+    .digest('hex');
+  this.owner.email = data.owner?.email;
+  this.owner.name = data.owner?.name;
   this.pageUrl = data.pageUrl;
   this.pageId = data.pageId;
   this.body = data.body;

@@ -1,6 +1,12 @@
 import Reaction from './model';
 
-export const getPageData = async ({ fingerprint, pageId }) => {
+export const getPageData = async ({
+  fingerprint,
+  pageId
+}: {
+  fingerprint: string;
+  pageId: string;
+}) => {
   const userReactionPromise = Reaction.findOne({
     fingerprint,
     pageId

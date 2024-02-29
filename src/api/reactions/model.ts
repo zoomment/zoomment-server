@@ -17,7 +17,7 @@ const schema = new Schema(
       required: true
     },
     reaction: {
-      type: String,
+      type: String
     }
   },
   {

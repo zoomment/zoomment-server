@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import moment from 'moment';
+import { TComment } from '@/types';
 
 if (!process.env.ADMIN_EMAIL_ADDR) {
   console.warn(
@@ -17,7 +18,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-export async function newCommentNotification(comment) {
+export async function newCommentNotification(comment: TComment) {
   if (!process.env.ADMIN_EMAIL_ADDR) {
     return;
   }

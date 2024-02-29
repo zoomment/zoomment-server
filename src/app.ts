@@ -1,14 +1,14 @@
 import mongoose from './services/mongoose';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-import express from 'express';
+import express, { ErrorRequestHandler } from 'express';
 import http from 'http';
 import cors from 'cors';
 import api from './api';
 
 const app = express();
 
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect(process.env.MONGODB_URI || '');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -17,7 +17,8 @@ app.use(cors());
 
 app.use('/api', api);
 
-app.use(function (err, req, res, next) {
+// eslint-disable-next-line no-unused-vars
+app.use(<ErrorRequestHandler>function (err, req, res, next) {
   console.log(err);
   const errorMessage = err.message || 'Something is wrong!';
   const errorStatue = err.status || 400;

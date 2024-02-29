@@ -3,8 +3,18 @@ import * as mailer from '../../services/mailer';
 import { asyncRoute } from '../../services/express';
 
 export const add = asyncRoute(async (req, res) => {
-  const comment = new Comment({});
-  await comment.insert(req.body).save();
+  //TODO add validation
+  const data = {
+    body: req.body.body,
+    owner: {
+      name: req.body.owner.name,
+      email: req.body.owner.email
+    },
+    pageUrl: req.body.pageUrl,
+    pageId: req.body.pageId
+  };
+
+  const comment = await Comment.create(data);
 
   res.json(comment);
   mailer.newCommentNotification(comment);
@@ -19,6 +29,7 @@ export const list = asyncRoute(async (req, res) => {
 });
 
 export const remove = asyncRoute(async (req, res) => {
+  // TODO add separate route for websites admin
   const { deletedCount } = await Comment.deleteOne({
     _id: req.params.id,
     secret: req.query.secret

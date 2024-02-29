@@ -1,6 +1,6 @@
 module.exports = {
   name: 'ZOOMMENT',
-  script: './index.js',
+  script: './dist/index.js',
   error_file: './logs/err.log',
   out_file: './logs/out.log',
   max_memory_restart: '4G',

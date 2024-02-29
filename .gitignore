@@ -6,6 +6,7 @@ logs
 /lib/
 .nyc_output
 .env
+dist
 .idea
 jsconfig.json
 .vscode

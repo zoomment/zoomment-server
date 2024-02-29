@@ -3,7 +3,8 @@ import { getPageData } from './helper';
 import { asyncRoute } from '../../services/express';
 
 export const add = asyncRoute(async (req, res) => {
-  const fingerprint = req.headers.fingerprint;
+  // TODO add validation
+  const fingerprint: string = req.headers.fingerprint as string;
   const pageId = req.body.pageId || req.query.pageId;
   const reaction = req.body.reaction.slice(0, 20); // Just in case, limit characters by 20
 
@@ -18,7 +19,7 @@ export const add = asyncRoute(async (req, res) => {
     await Reaction.create({ ...searchCondition, reaction });
   } else {
     if (recordInDB.reaction === reaction) {
-      await Reaction.deleteOne(recordInDB);
+      await Reaction.deleteOne({ id: recordInDB.id });
     } else {
       recordInDB.reaction = reaction;
       await recordInDB.save();
@@ -31,7 +32,8 @@ export const add = asyncRoute(async (req, res) => {
 });
 
 export const list = asyncRoute(async (req, res) => {
-  const fingerprint = req.headers.fingerprint;
+  // TODO add validation
+  const fingerprint: string = req.headers.fingerprint as string;
   const pageId = req.body.pageId || req.query.pageId;
 
   const reactions = await getPageData({ pageId, fingerprint });
