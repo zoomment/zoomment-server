@@ -8,6 +8,10 @@ const schema = new Schema(
         required: false
       }
     },
+    siteId: {
+      type: Schema.Types.ObjectId,
+      required: true
+    },
     fingerprint: {
       type: String,
       required: true

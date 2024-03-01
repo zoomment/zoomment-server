@@ -1,6 +1,6 @@
 import Reaction from './model';
 import { getPageData } from './helper';
-import { asyncRoute } from '../../services/express';
+import { asyncRoute } from '@/services/express';
 
 export const add = asyncRoute(async (req, res) => {
   // TODO add validation

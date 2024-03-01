@@ -1,6 +1,6 @@
 import Comment from './model';
-import * as mailer from '../../services/mailer';
-import { asyncRoute } from '../../services/express';
+import * as mailer from '@/services/mailer';
+import { asyncRoute } from '@/services/express';
 
 export const add = asyncRoute(async (req, res) => {
   //TODO add validation

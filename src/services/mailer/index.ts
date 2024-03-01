@@ -24,7 +24,7 @@ export async function newCommentNotification(comment: TComment) {
   }
   const date = dayjs(comment.createdAt).format('DD MMM YYYY - HH:mm');
   await transporter.sendMail({
-    from: `"Zoomment.com" <${process.env.BOT_EMAIL_ADDR}>`,
+    from: `"${process.env.BRAND_NAME}" <${process.env.BOT_EMAIL_ADDR}>`,
     to: process.env.ADMIN_EMAIL_ADDR,
     subject: 'You have a new comment!',
     html: `
@@ -40,6 +40,27 @@ export async function newCommentNotification(comment: TComment) {
         <div style="padding-top: 20px; font-size: 12px;">
           [<a href="${process.env.API_URL}/comments/${comment._id}/delete?secret=${comment.secret}">Discard</a>]
         </div>
+			<div>
+		`
+  });
+}
+
+export async function sendMagicLink(authToken: string) {
+  if (!process.env.ADMIN_EMAIL_ADDR) {
+    return;
+  }
+
+  return await transporter.sendMail({
+    from: `"${process.env.BRAND_NAME}" <${process.env.BOT_EMAIL_ADDR}>`,
+    to: process.env.ADMIN_EMAIL_ADDR,
+    subject: 'You have a new comment!',
+    html: `
+      <div style="padding: 20px;">
+        <h4>Click the link below to sign in to your ${process.env.BRAND_NAME} dashboard.</h4>
+        <a href="${process.env.DASHBOARD_URL}/dashboard?token=${authToken}" target="_blank" style="border: solid 2px #0867ec; border-radius: 4px; box-sizing: border-box; cursor: pointer; display: inline-block; font-size: 16px; font-weight: bold; margin: 0; padding: 12px 24px; text-decoration: none; text-transform: capitalize; background-color: #0867ec; border-color: #0867ec; color: #ffffff;">Sign in to ${process.env.BRAND_NAME}</a>
+        <p>
+          If you did not make this request, you can safely ignore this email.
+        </p>
 			<div>
 		`
   });
