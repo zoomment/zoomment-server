@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import moment from 'moment';
+const dayjs = require('dayjs');
 import { TComment } from '@/types';
 
 if (!process.env.ADMIN_EMAIL_ADDR) {
@@ -22,7 +22,7 @@ export async function newCommentNotification(comment: TComment) {
   if (!process.env.ADMIN_EMAIL_ADDR) {
     return;
   }
-  const date = moment(comment.createdAt).format('DD.MMM.YYYY - HH:mm');
+  const date = dayjs(comment.createdAt).format('DD MMM YYYY - HH:mm');
   await transporter.sendMail({
     from: `"Zoomment.com" <${process.env.BOT_EMAIL_ADDR}>`,
     to: process.env.ADMIN_EMAIL_ADDR,
