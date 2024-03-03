@@ -13,7 +13,8 @@ const schema = new Schema<TUser>(
     },
     role: {
       type: Number,
-      required: true
+      required: true,
+      default: 1
     }
   },
   {

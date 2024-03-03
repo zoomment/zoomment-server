@@ -1,4 +1,5 @@
 import mongoose from './services/mongoose';
+import { auth } from './services/express';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import express, { ErrorRequestHandler } from 'express';
@@ -14,6 +15,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors());
+app.use(auth());
 
 app.use('/api', api);
 

@@ -6,6 +6,7 @@ import { sendMagicLink } from '@/services/mailer';
 export const auth = asyncRoute(async (req, res) => {
   // TODO add validation
   const email = req.body.email;
+
   let user = await User.findOne({ email });
 
   if (!user) {
@@ -19,5 +20,5 @@ export const auth = asyncRoute(async (req, res) => {
 
   await sendMagicLink(token);
 
-  res.sendStatus(200);
+  res.json({});
 });
