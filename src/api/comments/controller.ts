@@ -2,6 +2,7 @@ import Comment from './model';
 import Site from '@/api/sites';
 import * as mailer from '@/services/mailer';
 import { asyncRoute } from '@/services/express';
+import crypto from 'crypto';
 
 export const add = asyncRoute(async (req, res) => {
   //TODO add validation
@@ -18,7 +19,9 @@ export const add = asyncRoute(async (req, res) => {
     pageId: req.body.pageId
   };
 
-  const comment = await Comment.create(data);
+  const comment = new Comment(data);
+
+  await comment.save();
 
   res.json(comment);
   mailer.newCommentNotification(comment);
