@@ -57,12 +57,11 @@ export const listBySiteId = asyncRoute(async (req, res) => {
   const siteId = req.params.siteId;
   const site = await Site.findById(siteId);
 
-  if (!site || site.userId !== req.user.id) {
+  if (!site || String(site.userId) !== String(req.user.id)) {
     res.status(400).json({ message: 'Site not found' });
     return;
   }
 
   const comments = await Comment.find({ domain: site.domain });
-
   res.json(comments);
 });
