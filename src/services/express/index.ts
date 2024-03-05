@@ -23,7 +23,6 @@ export const auth = (): RequestHandler => {
       };
 
       // TODO check expiration date
-
       req.user = await User.findById(decoded.id);
 
       next();

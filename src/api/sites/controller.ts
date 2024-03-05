@@ -8,14 +8,14 @@ export const add = asyncRoute(async (req, res) => {
   const token = await fetchSiteToken(websiteUrl.href);
 
   if (token !== req.user.id) {
-    res.json({ message: 'Invalid token' }).status(401);
+    res.status(401).json({ message: 'Meta tag not found' });
     return;
   }
 
   const exists = await Site.findOne({ domain });
 
   if (exists) {
-    res.json({ message: 'Website already exists' }).status(401);
+    res.status(401).json({ message: 'Website already exists' });
     return;
   }
 
@@ -25,5 +25,11 @@ export const add = asyncRoute(async (req, res) => {
     domain: websiteUrl.hostname
   });
 
-  res.status(200).json(site);
+  res.json(site);
+});
+
+export const list = asyncRoute(async (req, res) => {
+  const sites = await Site.find({ userId: req.user.id });
+
+  res.json(sites);
 });
