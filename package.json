@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon --watch 'src/**' --ext 'ts,json' --exec 'ts-node -r tsconfig-paths/register ./index.ts'",
     "start": "npm run build && pm2 start ./dist/ecosystem.config.js",
-    "restart": "tsc && pm2 restart ZOOMMENT",
+    "restart": "npm run build && pm2 restart ZOOMMENT",
     "kill": "pm2 delete ZOOMMENT",
     "build": "tsc && tsc-alias",
     "lint": "eslint src/**/*.ts --fix",
