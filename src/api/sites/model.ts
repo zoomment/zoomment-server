@@ -7,13 +7,9 @@ const schema = new Schema<TSite>(
       type: String,
       required: true
     },
-    domainVerified: {
+    verified: {
       type: Boolean,
       default: false
-    },
-    token: {
-      type: String,
-      required: true
     },
     userId: {
       type: Schema.Types.ObjectId,
