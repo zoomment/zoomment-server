@@ -7,21 +7,25 @@ import crypto from 'crypto';
 export const add = asyncRoute(async (req, res) => {
   //TODO add validation
   const url = new URL(req.body.pageUrl);
+  const gravatar = crypto
+    .createHash('md5')
+    .update(req.body.owner.email || '')
+    .digest('hex');
 
   const data = {
     body: req.body.body,
     owner: {
       name: req.body.owner.name,
-      email: req.body.owner.email
+      email: req.body.owner.email,
+      gravatar
     },
     domain: url.hostname,
     pageUrl: url.href,
-    pageId: req.body.pageId
+    pageId: req.body.pageId,
+    secret: crypto.randomBytes(20).toString('hex')
   };
 
-  const comment = new Comment(data);
-
-  await comment.save();
+  const comment = await Comment.create(data);
 
   res.json(comment);
   mailer.newCommentNotification(comment);
