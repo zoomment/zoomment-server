@@ -6,7 +6,7 @@ export const add = asyncRoute(async (req, res) => {
   const websiteUrl = new URL(req.body.url);
   const domain = websiteUrl.hostname;
   const token = await fetchSiteToken(websiteUrl.href);
-  console.log(token, req.user.id);
+
   if (token !== req.user.id) {
     res.status(401).json({ message: 'Meta tag not found' });
     return;

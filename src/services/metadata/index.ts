@@ -1,4 +1,5 @@
 import cheerio from 'cheerio';
+import fetch from 'node-fetch';
 
 export async function fetchSiteToken(url: string) {
   try {
