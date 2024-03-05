@@ -1,16 +1,20 @@
 import Comment from './model';
+import Site from '@/api/sites';
 import * as mailer from '@/services/mailer';
 import { asyncRoute } from '@/services/express';
 
 export const add = asyncRoute(async (req, res) => {
   //TODO add validation
+  const url = new URL(req.body.pageUrl);
+
   const data = {
     body: req.body.body,
     owner: {
       name: req.body.owner.name,
       email: req.body.owner.email
     },
-    pageUrl: req.body.pageUrl,
+    domain: url.hostname,
+    pageUrl: url.href,
     pageId: req.body.pageId
   };
 

@@ -22,10 +22,6 @@ const schema = new Schema<TComment>(
         required: true
       }
     },
-    siteId: {
-      type: Schema.Types.ObjectId,
-      required: true
-    },
     pageUrl: {
       type: String,
       required: true
