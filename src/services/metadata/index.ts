@@ -1,10 +1,9 @@
 import cheerio from 'cheerio';
-import fetch from 'node-fetch';
+import axios from 'axios';
 
 export async function fetchSiteToken(url: string) {
   try {
-    const response = await fetch(url);
-    const html = await response.text();
+    const html = await axios.get<string, string>(url, { responseType: 'text' });
     const $ = cheerio.load(html);
 
     let token: string | undefined;
