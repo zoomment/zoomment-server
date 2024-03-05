@@ -1,5 +1,5 @@
 import Comment from './model';
-import Site from '@/api/sites';
+import Site from '@/api/sites/model';
 import * as mailer from '@/services/mailer';
 import { asyncRoute } from '@/services/express';
 import crypto from 'crypto';
@@ -14,11 +14,15 @@ export const add = asyncRoute(async (req, res) => {
 
   const data = {
     body: req.body.body,
+    // owner field deprecated
     owner: {
       name: req.body.owner.name,
       email: req.body.owner.email,
       gravatar
     },
+    gravatar,
+    author: req.body.owner.name,
+    email: req.body.owner.email,
     domain: url.hostname,
     pageUrl: url.href,
     pageId: req.body.pageId,
@@ -33,7 +37,7 @@ export const add = asyncRoute(async (req, res) => {
 
 export const list = asyncRoute(async (req, res) => {
   const comments = await Comment.find({ pageId: req.query.pageId })
-    .select('owner.name owner.gravatar body createdAt')
+    .select('owner.name owner.gravatar body createdAt gravatar author')
     .sort({ createdAt: 'desc' });
 
   res.json(comments);
@@ -47,4 +51,18 @@ export const remove = asyncRoute(async (req, res) => {
   });
 
   res.sendStatus(deletedCount > 0 ? 200 : 400);
+});
+
+export const listBySiteId = asyncRoute(async (req, res) => {
+  const siteId = req.params.siteId;
+  const site = await Site.findById(siteId);
+
+  if (!site || site.userId !== req.user.id) {
+    res.status(400).json({ message: 'Site not found' });
+    return;
+  }
+
+  const comments = await Comment.find({ domain: site.domain });
+
+  res.json(comments);
 });

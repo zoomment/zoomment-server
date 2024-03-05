@@ -6,6 +6,7 @@ import express, { ErrorRequestHandler } from 'express';
 import http from 'http';
 import cors from 'cors';
 import api from './api';
+import { migrate } from './migrations';
 
 const app = express();
 
@@ -33,5 +34,15 @@ setImmediate(() => {
     console.log('Express server listening on http://localhost:%s/', process.env.PORT);
   });
 });
+
+if (process.env.MIGRATION) {
+  migrate()
+    .then(() => {
+      throw new Error('Migration complied');
+    })
+    .catch(e => {
+      throw new Error(e);
+    });
+}
 
 export default app;

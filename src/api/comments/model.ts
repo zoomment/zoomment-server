@@ -1,5 +1,4 @@
 import mongoose, { Schema } from 'mongoose';
-import crypto from 'crypto';
 import { TComment } from '@/types';
 
 const schema = new Schema<TComment>(
@@ -11,7 +10,7 @@ const schema = new Schema<TComment>(
       },
       gravatar: {
         type: String,
-        required: true
+        required: false
       },
       email: {
         type: String,
@@ -21,6 +20,22 @@ const schema = new Schema<TComment>(
         type: String,
         required: true
       }
+    },
+    gravatar: {
+      type: String,
+      required: false
+    },
+    domain: {
+      type: String,
+      required: true
+    },
+    author: {
+      type: String,
+      required: true
+    },
+    email: {
+      type: String,
+      required: true
     },
     pageUrl: {
       type: String,

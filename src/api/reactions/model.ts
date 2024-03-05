@@ -2,13 +2,11 @@ import mongoose, { Schema } from 'mongoose';
 
 const schema = new Schema(
   {
-    owner: {
-      ip: {
-        type: String,
-        required: false
-      }
-    },
     fingerprint: {
+      type: String,
+      required: true
+    },
+    domain: {
       type: String,
       required: true
     },
