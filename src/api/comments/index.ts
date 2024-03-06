@@ -7,7 +7,6 @@ const router = Router();
 router.get('/', list);
 router.post('/', add);
 router.delete('/:id', remove);
-router.get('/:id/delete', remove);
 
 router.get('/sites/:siteId', access('admin'), listBySiteId);
 

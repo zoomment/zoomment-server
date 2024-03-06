@@ -1,5 +1,6 @@
 import Comment from './model';
 import Site from '@/api/sites/model';
+import User from '@/api/users/model';
 import * as mailer from '@/services/mailer';
 import { asyncRoute } from '@/services/express';
 import crypto from 'crypto';
@@ -7,23 +8,19 @@ import crypto from 'crypto';
 export const add = asyncRoute(async (req, res) => {
   //TODO add validation
   const url = new URL(req.body.pageUrl);
-  const gravatar = crypto
-    .createHash('md5')
-    .update(req.body.owner.email || '')
-    .digest('hex');
+  const email = req.body.email || req.body?.owner.email || '';
+  const author = req.body.author || req.body?.owner.name || '';
+  const domain = url.hostname;
+  const gravatar = crypto.createHash('md5').update(email).digest('hex');
 
   const data = {
     body: req.body.body,
     // owner field deprecated
-    owner: {
-      name: req.body.owner.name,
-      email: req.body.owner.email,
-      gravatar
-    },
+    owner: { name: author, email, gravatar },
     gravatar,
-    author: req.body.owner.name,
-    email: req.body.owner.email,
-    domain: url.hostname,
+    author,
+    email,
+    domain,
     pageUrl: url.href,
     pageId: req.body.pageId,
     secret: crypto.randomBytes(20).toString('hex')
@@ -32,7 +29,14 @@ export const add = asyncRoute(async (req, res) => {
   const comment = await Comment.create(data);
 
   res.json(comment);
-  mailer.newCommentNotification(comment);
+
+  const site = await Site.findOne({ domain });
+  if (!site) return;
+
+  const user = await User.findById(site.userId);
+  if (user) {
+    mailer.newCommentNotification(user.email, comment);
+  }
 });
 
 export const list = asyncRoute(async (req, res) => {
@@ -62,6 +66,9 @@ export const listBySiteId = asyncRoute(async (req, res) => {
     return;
   }
 
-  const comments = await Comment.find({ domain: site.domain });
-  res.json(comments);
+  const comments = await Comment.find({ domain: site.domain }).sort({
+    createdAt: 'desc'
+  });
+
+  res.status(200).json(comments);
 });

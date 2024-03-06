@@ -3,6 +3,7 @@ import { TComment } from '@/types';
 
 const schema = new Schema<TComment>(
   {
+    // owner field deprecated
     owner: {
       ip: {
         type: String,

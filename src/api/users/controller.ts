@@ -22,7 +22,7 @@ export const auth = asyncRoute(async (req, res) => {
     }
   );
 
-  await sendMagicLink(token);
+  await sendMagicLink(user.email, token);
 
   res.json({});
 });

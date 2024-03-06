@@ -3,6 +3,7 @@ import { Schema } from 'mongoose';
 export type TComment = {
   id: string;
   _id: Schema.Types.ObjectId;
+  // owner field deprecated
   owner: {
     gravatar: string;
     email: string;
