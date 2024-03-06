@@ -34,7 +34,7 @@ export const add = asyncRoute(async (req, res) => {
   if (!site) return;
 
   const user = await User.findById(site.userId);
-  if (user) {
+  if (user && user.email !== email) {
     mailer.newCommentNotification(user.email, comment);
   }
 });
