@@ -29,7 +29,7 @@ export const add = asyncRoute(async (req, res) => {
 });
 
 export const list = asyncRoute(async (req, res) => {
-  const sites = await Site.find({ userId: req.user.id });
+  const sites = await Site.find({ userId: req.user.id }).sort({ _id: 'desc' });
 
   res.json(sites);
 });

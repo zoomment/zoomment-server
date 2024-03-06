@@ -42,7 +42,7 @@ export const add = asyncRoute(async (req, res) => {
 export const list = asyncRoute(async (req, res) => {
   const comments = await Comment.find({ pageId: req.query.pageId })
     .select('owner.name owner.gravatar body createdAt gravatar author')
-    .sort({ createdAt: 'desc' });
+    .sort({ createdAt: 'asc' });
 
   res.json(comments);
 });
