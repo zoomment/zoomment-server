@@ -43,9 +43,9 @@ export async function sendMagicLink(userEmail: string, authToken: string) {
     subject: `Sign in to ${process.env.BRAND_NAME}`,
     html: `
       <div style="padding: 20px;">
-        <h4 style="margin-bottom: 10px;>Click the link below to sign in to your ${process.env.BRAND_NAME} dashboard.</h4>
+        <h4 style="margin-bottom: 10px;">Click the link below to sign in to your ${process.env.BRAND_NAME} dashboard.</h4>
         <a href="${process.env.DASHBOARD_URL}/dashboard?token=${authToken}" target="_blank" style="border: none; border-radius: 8px; box-sizing: border-box; cursor: pointer; display: inline-block; font-size: 16px; font-weight: bold; margin: 0; padding: 10px 15px; text-decoration: none; text-transform: capitalize; background-color: #1677ff; color: #ffffff;">Sign in to ${process.env.BRAND_NAME}</a>
-        <p style="margin-top: 10px;>
+        <p style="margin-top: 10px;">
           If you did not make this request, you can safely ignore this email.
         </p>
 			<div>
