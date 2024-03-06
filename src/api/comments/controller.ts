@@ -54,7 +54,11 @@ export const remove = asyncRoute(async (req, res) => {
     secret: req.query.secret
   });
 
-  res.sendStatus(deletedCount > 0 ? 200 : 400);
+  if (deletedCount > 0) {
+    res.status(200).json({ _id: req.params.id });
+  } else {
+    res.status(400).json({ message: 'Comment not found' });
+  }
 });
 
 export const listBySiteId = asyncRoute(async (req, res) => {
