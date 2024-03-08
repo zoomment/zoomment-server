@@ -40,7 +40,15 @@ export const add = asyncRoute(async (req, res) => {
 });
 
 export const list = asyncRoute(async (req, res) => {
-  const comments = await Comment.find({ pageId: req.query.pageId })
+  const query: any = {};
+
+  if (req.query.pageId) {
+    query.pageId = req.query.pageId;
+  } else if (req.query.domain) {
+    query.domain = req.query.domain;
+  }
+
+  const comments = await Comment.find(query)
     .select('owner.name owner.gravatar body createdAt gravatar author')
     .sort({ createdAt: 'asc' });
 
@@ -57,7 +65,7 @@ export const remove = asyncRoute(async (req, res) => {
   if (deletedCount > 0) {
     res.status(200).json({ _id: req.params.id });
   } else {
-    res.status(400).json({ message: 'Comment not found' });
+    res.status(404).json({ message: 'Comment not found' });
   }
 });
 
@@ -66,7 +74,7 @@ export const listBySiteId = asyncRoute(async (req, res) => {
   const site = await Site.findById(siteId);
 
   if (!site || String(site.userId) !== String(req.user.id)) {
-    res.status(400).json({ message: 'Site not found' });
+    res.status(404).json({ message: 'Site not found' });
     return;
   }
 

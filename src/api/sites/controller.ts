@@ -8,7 +8,7 @@ export const add = asyncRoute(async (req, res) => {
   const token = await fetchSiteToken(websiteUrl.href);
 
   if (token !== req.user.id) {
-    res.status(401).json({ message: 'Meta tag not found' });
+    res.status(404).json({ message: 'Meta tag not found' });
     return;
   }
 
@@ -32,4 +32,17 @@ export const list = asyncRoute(async (req, res) => {
   const sites = await Site.find({ userId: req.user.id }).sort({ _id: 'desc' });
 
   res.json(sites);
+});
+
+export const remove = asyncRoute(async (req, res) => {
+  const { deletedCount } = await Site.deleteOne({
+    userId: req.user.id,
+    id: req.params.id
+  });
+
+  if (deletedCount > 0) {
+    res.status(200).json({ _id: req.params.id });
+  } else {
+    res.status(404).json({ message: 'Site not found' });
+  }
 });
