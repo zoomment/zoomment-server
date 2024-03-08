@@ -6,6 +6,6 @@ const router = Router();
 
 router.post('/', access('admin'), add);
 router.get('/', access('admin'), list);
-router.delete('/', access('admin'), remove);
+router.delete('/:id', access('admin'), remove);
 
 export default router;
