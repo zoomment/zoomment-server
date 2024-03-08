@@ -37,7 +37,7 @@ export const list = asyncRoute(async (req, res) => {
 export const remove = asyncRoute(async (req, res) => {
   const { deletedCount } = await Site.deleteOne({
     userId: req.user.id,
-    id: req.params.id
+    _id: req.params.id
   });
 
   if (deletedCount > 0) {
