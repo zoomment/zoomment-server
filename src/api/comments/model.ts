@@ -1,9 +1,9 @@
 import mongoose, { Schema } from 'mongoose';
-import crypto from 'crypto';
 import { TComment } from '@/types';
 
 const schema = new Schema<TComment>(
   {
+    // owner field deprecated
     owner: {
       ip: {
         type: String,
@@ -11,7 +11,7 @@ const schema = new Schema<TComment>(
       },
       gravatar: {
         type: String,
-        required: true
+        required: false
       },
       email: {
         type: String,
@@ -21,6 +21,22 @@ const schema = new Schema<TComment>(
         type: String,
         required: true
       }
+    },
+    gravatar: {
+      type: String,
+      required: false
+    },
+    domain: {
+      type: String,
+      required: true
+    },
+    author: {
+      type: String,
+      required: true
+    },
+    email: {
+      type: String,
+      required: true
     },
     pageUrl: {
       type: String,
@@ -43,21 +59,6 @@ const schema = new Schema<TComment>(
     timestamps: true
   }
 );
-
-schema.methods.insert = function (data: Partial<TComment>) {
-  // TODO add validation and fix type
-  this.owner.gravatar = crypto
-    .createHash('md5')
-    .update(data.owner?.email || '')
-    .digest('hex');
-  this.owner.email = data.owner?.email;
-  this.owner.name = data.owner?.name;
-  this.pageUrl = data.pageUrl;
-  this.pageId = data.pageId;
-  this.body = data.body;
-  this.secret = crypto.randomBytes(20).toString('hex');
-  return this;
-};
 
 const model = mongoose.model('Comment', schema);
 export default model;

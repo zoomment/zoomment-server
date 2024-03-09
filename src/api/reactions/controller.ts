@@ -1,6 +1,6 @@
 import Reaction from './model';
 import { getPageData } from './helper';
-import { asyncRoute } from '../../services/express';
+import { asyncRoute } from '@/services/express';
 
 export const add = asyncRoute(async (req, res) => {
   // TODO add validation
@@ -8,11 +8,14 @@ export const add = asyncRoute(async (req, res) => {
   const pageId = req.body.pageId || req.query.pageId;
   const reaction = req.body.reaction.slice(0, 20); // Just in case, limit characters by 20
 
+  // TODO remove after migration
+  const url = new URL('https://' + pageId);
+
   if (!fingerprint) {
     return res.status(500).send('Fingerprint required for reacting.');
   }
 
-  const searchCondition = { pageId, fingerprint };
+  const searchCondition = { pageId, fingerprint, domain: url.hostname };
   const recordInDB = await Reaction.findOne(searchCondition);
 
   if (!recordInDB) {

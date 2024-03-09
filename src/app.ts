@@ -1,10 +1,12 @@
 import mongoose from './services/mongoose';
+import { auth } from './services/express';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import express, { ErrorRequestHandler } from 'express';
 import http from 'http';
 import cors from 'cors';
 import api from './api';
+import { migrate } from './migrations';
 
 const app = express();
 
@@ -14,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors());
+app.use(auth());
 
 app.use('/api', api);
 
@@ -31,5 +34,15 @@ setImmediate(() => {
     console.log('Express server listening on http://localhost:%s/', process.env.PORT);
   });
 });
+
+if (process.env.MIGRATION) {
+  migrate()
+    .then(() => {
+      throw new Error('Migration complied');
+    })
+    .catch(e => {
+      throw new Error(e);
+    });
+}
 
 export default app;

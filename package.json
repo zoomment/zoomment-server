@@ -4,11 +4,11 @@
   "description": "Open Source Self-Hosted Comment System",
   "main": "./index.ts",
   "scripts": {
-    "dev": "nodemon --watch 'src/**' --ext 'ts,json' --exec 'ts-node ./index.ts'",
+    "dev": "nodemon --watch 'src/**' --ext 'ts,json' --exec 'ts-node -r tsconfig-paths/register ./index.ts'",
     "start": "npm run build && pm2 start ./dist/ecosystem.config.js",
-    "restart": "pm2 restart ZOOMMENT",
+    "restart": "npm run build && pm2 restart ZOOMMENT",
     "kill": "pm2 delete ZOOMMENT",
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "lint": "eslint src/**/*.ts --fix",
     "prettier": "npx prettier ./ --check",
     "prettier:fix": "npm run prettier -- --write"
@@ -31,12 +31,15 @@
   "author": "Tigran Simonyan",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.6.7",
     "body-parser": "^1.19.0",
+    "cheerio": "^1.0.0-rc.12",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dayjs": "^1.11.10",
     "dotenv-safe": "^8.2.0",
     "express": "^4.17.1",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.4.0",
     "nodemailer": "^6.4.15"
   },
@@ -45,6 +48,7 @@
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/dotenv-safe": "^8.1.6",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/nodemailer": "^6.4.14",
     "@typescript-eslint/eslint-plugin": "^7.1.0",
     "@typescript-eslint/parser": "^7.1.0",
@@ -56,6 +60,8 @@
     "pm2": "^4.5.0",
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.8",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3"
   }
 }

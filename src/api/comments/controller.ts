@@ -1,29 +1,56 @@
 import Comment from './model';
-import * as mailer from '../../services/mailer';
-import { asyncRoute } from '../../services/express';
+import Site from '@/api/sites/model';
+import User from '@/api/users/model';
+import * as mailer from '@/services/mailer';
+import { asyncRoute } from '@/services/express';
+import crypto from 'crypto';
 
 export const add = asyncRoute(async (req, res) => {
   //TODO add validation
+  const url = new URL(req.body.pageUrl);
+  const email = req.body.email || req.body?.owner.email || '';
+  const author = req.body.author || req.body?.owner.name || '';
+  const domain = url.hostname;
+  const gravatar = crypto.createHash('md5').update(email).digest('hex');
+
   const data = {
     body: req.body.body,
-    owner: {
-      name: req.body.owner.name,
-      email: req.body.owner.email
-    },
-    pageUrl: req.body.pageUrl,
-    pageId: req.body.pageId
+    // owner field deprecated
+    owner: { name: author, email, gravatar },
+    gravatar,
+    author,
+    email,
+    domain,
+    pageUrl: url.href,
+    pageId: req.body.pageId,
+    secret: crypto.randomBytes(20).toString('hex')
   };
 
   const comment = await Comment.create(data);
 
   res.json(comment);
-  mailer.newCommentNotification(comment);
+
+  const site = await Site.findOne({ domain });
+  if (!site) return;
+
+  const user = await User.findById(site.userId);
+  if (user && user.email !== email) {
+    mailer.newCommentNotification(user.email, comment);
+  }
 });
 
 export const list = asyncRoute(async (req, res) => {
-  const comments = await Comment.find({ pageId: req.query.pageId })
-    .select('owner.name owner.gravatar body createdAt')
-    .sort({ createdAt: 'desc' });
+  const query: any = {};
+
+  if (req.query.pageId) {
+    query.pageId = req.query.pageId;
+  } else if (req.query.domain) {
+    query.domain = req.query.domain;
+  }
+
+  const comments = await Comment.find(query)
+    .select('owner.name owner.gravatar body createdAt gravatar author')
+    .sort({ createdAt: 'asc' });
 
   res.json(comments);
 });
@@ -35,5 +62,25 @@ export const remove = asyncRoute(async (req, res) => {
     secret: req.query.secret
   });
 
-  res.sendStatus(deletedCount > 0 ? 200 : 400);
+  if (deletedCount > 0) {
+    res.status(200).json({ _id: req.params.id });
+  } else {
+    res.status(404).json({ message: 'Comment not found' });
+  }
+});
+
+export const listBySiteId = asyncRoute(async (req, res) => {
+  const siteId = req.params.siteId;
+  const site = await Site.findById(siteId);
+
+  if (!site || String(site.userId) !== String(req.user.id)) {
+    res.status(404).json({ message: 'Site not found' });
+    return;
+  }
+
+  const comments = await Comment.find({ domain: site.domain }).sort({
+    createdAt: 'desc'
+  });
+
+  res.status(200).json(comments);
 });
