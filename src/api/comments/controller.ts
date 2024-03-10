@@ -10,6 +10,7 @@ export const add = asyncRoute(async (req, res) => {
   const url = new URL(req.body.pageUrl);
   const email = req.body.email || req.body?.owner.email || '';
   const author = req.body.author || req.body?.owner.name || '';
+  const parentId = req.body.parentId;
   const domain = url.hostname;
   const gravatar = crypto.createHash('md5').update(email).digest('hex');
 
@@ -17,6 +18,7 @@ export const add = asyncRoute(async (req, res) => {
     body: req.body.body,
     // owner field deprecated
     owner: { name: author, email, gravatar },
+    parentId,
     gravatar,
     author,
     email,
@@ -40,7 +42,9 @@ export const add = asyncRoute(async (req, res) => {
 });
 
 export const list = asyncRoute(async (req, res) => {
-  const query: any = {};
+  const query: any = {
+    parentId: null
+  };
 
   if (req.query.pageId) {
     query.pageId = req.query.pageId;
@@ -52,7 +56,21 @@ export const list = asyncRoute(async (req, res) => {
     .select('owner.name owner.gravatar body createdAt gravatar author')
     .sort({ createdAt: 'asc' });
 
-  res.json(comments);
+  const commentsWithReplies = await Promise.all(
+    comments.map(comment => {
+      return Comment.find({ parentId: comment.id })
+        .select('owner.name owner.gravatar body createdAt gravatar author parentId')
+        .sort({ createdAt: 'asc' })
+        .then(replies => {
+          return {
+            ...comment.toObject(),
+            replies
+          };
+        });
+    })
+  );
+
+  res.json(commentsWithReplies);
 });
 
 export const remove = asyncRoute(async (req, res) => {
