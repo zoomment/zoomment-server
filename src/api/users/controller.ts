@@ -1,4 +1,5 @@
 import User from './model';
+import Sites from '../sites/model';
 import jwt from 'jsonwebtoken';
 import { asyncRoute } from '@/services/express';
 import { sendMagicLink } from '@/services/mailer';
@@ -35,4 +36,17 @@ export const profile = asyncRoute(async (req, res) => {
     email: user.email,
     id: user.id
   });
+});
+
+export const remove = asyncRoute(async (req, res) => {
+  const userId = req.user.id;
+  const { deletedCount } = await User.deleteOne({ _id: userId });
+
+  await Sites.deleteMany({ userId });
+
+  if (deletedCount > 0) {
+    res.status(200).json({ _id: userId });
+  } else {
+    res.status(404).json({ message: 'Account not found' });
+  }
 });
