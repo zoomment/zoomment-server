@@ -22,6 +22,10 @@ const schema = new Schema<TComment>(
         required: true
       }
     },
+    parentId: {
+      type: String,
+      required: false
+    },
     gravatar: {
       type: String,
       required: false

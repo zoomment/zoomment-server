@@ -13,7 +13,7 @@ export type TComment = {
   gravatar: string;
   author: string;
   email: string;
-  siteId: Schema.Types.ObjectId;
+  parentId: Schema.Types.ObjectId;
   pageUrl: string;
   pageId: string;
   body: string;
