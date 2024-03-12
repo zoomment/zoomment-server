@@ -22,7 +22,7 @@ export const add = asyncRoute(async (req, res) => {
     await Reaction.create({ ...searchCondition, reaction });
   } else {
     if (recordInDB.reaction === reaction) {
-      await Reaction.deleteOne({ id: recordInDB.id });
+      await Reaction.deleteOne({ _id: recordInDB.id });
     } else {
       recordInDB.reaction = reaction;
       await recordInDB.save();
