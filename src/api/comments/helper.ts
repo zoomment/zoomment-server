@@ -44,6 +44,7 @@ export const getCommentPublicData = (comment: TComment, user?: TUser) => {
     body: obj.body,
     author: obj.author,
     gravatar: obj.gravatar,
+    parentId: obj.parentId,
     createdAt: obj.createdAt,
     isVerified: obj.isVerified
   };
