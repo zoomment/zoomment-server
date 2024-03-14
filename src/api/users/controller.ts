@@ -3,10 +3,11 @@ import Sites from '../sites/model';
 import jwt from 'jsonwebtoken';
 import { asyncRoute } from '@/services/express';
 import { sendMagicLink } from '@/services/mailer';
+import { cleanEmail } from '@/utils';
 
 export const auth = asyncRoute(async (req, res) => {
   // TODO add validation
-  const email = req.body.email;
+  const email = cleanEmail(req.body.email);
 
   let user = await User.findOne({ email });
 

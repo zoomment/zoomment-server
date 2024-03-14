@@ -1,6 +1,6 @@
-import { Schema } from 'mongoose';
+import { Schema, Document } from 'mongoose';
 
-export type TComment = {
+export type TComment = Document & {
   id: string;
   _id: Schema.Types.ObjectId;
   // owner field deprecated
@@ -9,6 +9,7 @@ export type TComment = {
     email: string;
     name: string;
   };
+  isVerified: boolean;
   domain: string;
   gravatar: string;
   author: string;

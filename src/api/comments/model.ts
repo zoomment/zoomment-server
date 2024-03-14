@@ -27,6 +27,10 @@ const schema = new Schema<TComment>(
       required: false,
       ref: 'Comment'
     },
+    isVerified: {
+      type: Boolean,
+      default: false
+    },
     gravatar: {
       type: String,
       required: false

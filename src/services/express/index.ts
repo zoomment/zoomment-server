@@ -35,7 +35,7 @@ export const auth = (): RequestHandler => {
 export const access = (level?: 'admin' | 'superAdmin'): RequestHandler => {
   return async (req, res, next) => {
     if (!req.user) {
-      res.sendStatus(403);
+      res.status(403).json({ message: 'Forbidden' });
       return;
     }
 
@@ -46,7 +46,7 @@ export const access = (level?: 'admin' | 'superAdmin'): RequestHandler => {
     } else if (level === 'admin' && req.user.role === 1) {
       next();
     } else {
-      res.sendStatus(403);
+      res.status(403).json({ message: 'Forbidden' });
     }
   };
 };
