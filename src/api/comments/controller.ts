@@ -83,7 +83,7 @@ export const remove = asyncRoute(async (req, res) => {
     _id: req.params.id
   };
 
-  if (query.secret) {
+  if (req.query.secret) {
     query.secret = req.query.secret;
   } else if (req.user) {
     query.email = cleanEmail(req.user.email);
