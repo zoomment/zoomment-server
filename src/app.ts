@@ -15,11 +15,7 @@ mongoose.connect(process.env.MONGODB_URI || '');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(
-  cors({
-    credentials: true
-  })
-);
+app.use(cors());
 app.use(auth());
 
 app.use('/api', api);
@@ -29,7 +25,7 @@ app.use(<ErrorRequestHandler>function (err, req, res, next) {
   console.log(err);
   const errorMessage = err.message || 'Something is wrong!';
   const errorStatue = err.status || 400;
-  res.status(errorStatue).send(errorMessage);
+  res.status(errorStatue).send({ message: errorMessage });
 });
 
 const server = http.createServer(app);

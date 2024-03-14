@@ -4,45 +4,47 @@ import User from '@/api/users/model';
 import * as mailer from '@/services/mailer';
 import { asyncRoute } from '@/services/express';
 import { cleanEmail } from '@/utils';
-import { getCommentPublicData } from './helper';
-import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
+import { getCommentPublicData, createCommentData } from './helper';
 
 export const add = asyncRoute(async (req, res) => {
   //TODO add validation
-  const url = new URL(req.body.pageUrl);
-  const email = cleanEmail(req.body.email || req.body?.owner.email || '');
-  const author = req.body.author || req.body?.owner.name || '';
-  const parentId = req.body.parentId;
-  const domain = url.hostname;
-  const gravatar = crypto.createHash('md5').update(email).digest('hex');
-
-  const isVerified = req.user && req.user.email === email;
-
-  const data = {
-    body: req.body.body,
-    // owner field deprecated
-    owner: { name: author, email, gravatar },
-    parentId,
-    gravatar,
-    author,
-    email,
-    domain,
-    isVerified,
-    pageUrl: url.href,
-    pageId: req.body.pageId,
-    secret: crypto.randomBytes(20).toString('hex')
-  };
+  const data = createCommentData(req.body, req.user);
 
   const comment = await Comment.create(data);
 
   res.json(comment);
 
-  const site = await Site.findOne({ domain });
+  // Send confirmation email to guest
+  if (!req.user) {
+    let user = await User.findOne({ email: data.email });
+
+    if (!user) {
+      user = await User.create({ email: data.email, name: data.author });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: data.email, name: data.author },
+      process.env.JWT_SECRET as string,
+      { expiresIn: '1y', algorithm: 'HS256' }
+    );
+
+    mailer.sendEmailVerificationLink({
+      userEmail: data.email,
+      authToken: token,
+      pageUrl: data.pageUrl
+    });
+  }
+
+  // Send an email notification to the site owner about a new comment
+  const site = await Site.findOne({ domain: data.domain });
+
   if (!site) return;
 
-  const user = await User.findById(site.userId);
-  if (user && user.email !== email) {
-    mailer.newCommentNotification(user.email, comment);
+  const siteOwner = await User.findById(site.userId);
+
+  if (siteOwner && siteOwner.email !== data.email) {
+    mailer.sendCommentNotification(siteOwner.email, comment);
   }
 });
 

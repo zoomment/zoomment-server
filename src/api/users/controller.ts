@@ -18,10 +18,7 @@ export const auth = asyncRoute(async (req, res) => {
   const token = jwt.sign(
     { id: user.id, email: user.email, name: user.name },
     process.env.JWT_SECRET as string,
-    {
-      expiresIn: '10d',
-      algorithm: 'HS256'
-    }
+    { expiresIn: '1y', algorithm: 'HS256' }
   );
 
   await sendMagicLink(user.email, token);
