@@ -1,11 +1,11 @@
 import { TComment, TUser } from '@/types';
-import { cleanEmail } from '@/utils';
+import { cleanEmail, cleanName } from '@/utils';
 import crypto from 'crypto';
 
 export const createCommentData = (obj: any, user?: TUser) => {
   const url = new URL(obj.pageUrl);
   const email = cleanEmail(obj.email || obj?.owner.email || '');
-  const author = obj.author || obj?.owner.name || '';
+  const author = cleanName(obj.author || obj?.owner.name || '');
   const parentId = obj.parentId;
   const domain = url.hostname;
   const gravatar = crypto.createHash('md5').update(email).digest('hex');
