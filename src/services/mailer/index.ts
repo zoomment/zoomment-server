@@ -17,7 +17,7 @@ export async function sendCommentNotification(userEmail: string, comment: TComme
   const date = dayjs(comment.createdAt).format('DD MMM YYYY - HH:mm');
   const template = generateTemplate({
     introduction: `
-      <p>🔔 You have a new comment!</p>
+      <p>You have a new comment!</p>
       <div style="font-size: 14px; line-height: 27px; margin-top: 10px;"> 
         <div><b>User:</b> ${comment.author}</div>
         <div><b>Date:</b> ${date}</div>
