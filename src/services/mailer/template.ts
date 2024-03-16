@@ -23,7 +23,7 @@ export const generateTemplate = (props: Props) => {
       body {
         font-family: Helvetica, sans-serif;
         -webkit-font-smoothing: antialiased;
-        font-size: 16px;
+        font-size: 14px;
         line-height: 1.3;
         -ms-text-size-adjust: 100%;
         -webkit-text-size-adjust: 100%;
@@ -38,7 +38,7 @@ export const generateTemplate = (props: Props) => {
       
       table td {
         font-family: Helvetica, sans-serif;
-        font-size: 16px;
+        font-size: 14px;
         vertical-align: top;
       }
       /* -------------------------------------
@@ -58,17 +58,17 @@ export const generateTemplate = (props: Props) => {
       
       .container {
         margin: 0 auto !important;
-        max-width: 600px;
+        max-width: 400px;
         padding: 0;
         padding-top: 24px;
-        width: 600px;
+        width: 400px;
       }
       
       .content {
         box-sizing: border-box;
         display: block;
         margin: 0 auto;
-        max-width: 600px;
+        max-width: 400px;
         padding: 0;
       }
       /* -------------------------------------
@@ -78,18 +78,19 @@ export const generateTemplate = (props: Props) => {
       .main {
         background: #ffffff;
         border: 1px solid #eaebed;
-        border-radius: 16px;
+        border-radius: 14px;
         width: 100%;
       }
       
       .wrapper {
         box-sizing: border-box;
-        padding: 24px;
+        padding: 24px 35px;
       }
       
       .footer {
         clear: both;
         padding-top: 24px;
+        padding-bottom: 24px;
         text-align: center;
         width: 100%;
       }
@@ -106,9 +107,18 @@ export const generateTemplate = (props: Props) => {
       TYPOGRAPHY
   ------------------------------------- */
       
+      h2 {
+        font-family: Helvetica, sans-serif;
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0;
+        margin-top: 12px;
+        margin-bottom: 16px;
+      }
+
       p {
         font-family: Helvetica, sans-serif;
-        font-size: 16px;
+        font-size: 14px;
         font-weight: normal;
         margin: 0;
         margin-bottom: 16px;
@@ -145,7 +155,7 @@ export const generateTemplate = (props: Props) => {
       .btn a {
         background-color: #ffffff;
         border: solid 2px #0867ec;
-        border-radius: 4px;
+        border-radius: 8px;
         box-sizing: border-box;
         color: #0867ec;
         cursor: pointer;
@@ -153,7 +163,7 @@ export const generateTemplate = (props: Props) => {
         font-size: 16px;
         font-weight: bold;
         margin: 0;
-        padding: 12px 24px;
+        padding: 10px 20px;
         text-decoration: none;
         text-transform: capitalize;
       }
@@ -227,7 +237,7 @@ export const generateTemplate = (props: Props) => {
         .main p,
         .main td,
         .main span {
-          font-size: 16px !important;
+          font-size: 14px !important;
         }
         .wrapper {
           padding: 8px !important;
@@ -303,22 +313,37 @@ export const generateTemplate = (props: Props) => {
                 <!-- START MAIN CONTENT AREA -->
                 <tr>
                   <td class="wrapper">
+                    <div style="text-align: center;">
+                      <img width="50" height="auto" src="${process.env.DASHBOARD_URL}/email-logo.png" alt="${process.env.BRAND_NAME}" />
+                      <br/>
+                      <h2>${process.env.BRAND_NAME}</h2>
+                      <br/>
+                    </div>
                     <p>${props.introduction}</p>
-                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
-                      <tbody>
-                        <tr>
-                          <td align="left">
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                              <tbody>
-                                <tr>
-                                  <td> <a href="${props.buttonUrl}" target="_blank">${props.buttonText}</a> </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    ${
+                      props.buttonUrl &&
+                      `
+                      <br/>
+                      <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+                        <tbody>
+                          <tr>
+                            <td align="center">
+                              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                  <tr>
+                                    <td>
+                                      <a href="${props.buttonUrl}" target="_blank">${props.buttonText}</a> 
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <br/>
+                      `
+                    }
                     <p>${props.epilogue}</p>
                   </td>
                 </tr>

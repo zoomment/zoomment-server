@@ -17,10 +17,9 @@ export async function sendCommentNotification(userEmail: string, comment: TComme
   const date = dayjs(comment.createdAt).format('DD MMM YYYY - HH:mm');
   const template = generateTemplate({
     introduction: `
-      <img width="50" src="https://www.gravatar.com/avatar/${comment.gravatar}?d=monsterid">
+      <p>🔔 You have a new comment!</p>
       <div style="font-size: 14px; line-height: 27px; margin-top: 10px;"> 
         <div><b>User:</b> ${comment.author}</div>
-        <div><b>Email:</b> ${comment.email}</div>
         <div><b>Date:</b> ${date}</div>
         <div><b>Page:</b> ${comment.pageUrl}</div>
         <div><b>Comment:</b> ${comment.body}</div>
@@ -65,9 +64,9 @@ export async function sendEmailVerificationLink({
   pageUrl: string;
 }) {
   const template = generateTemplate({
-    introduction: `Please confirm your email address to be able to edit or delete your comment.`,
+    introduction: `Please confirm your email address to be able to manage your comment.`,
     buttonUrl: `${pageUrl}?zoommentToken=${authToken}`,
-    buttonText: `Verify you email`,
+    buttonText: `Confirm`,
     epilogue: 'If you did not make this request, you can safely ignore this email.'
   });
 
