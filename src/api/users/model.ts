@@ -15,6 +15,10 @@ const schema = new Schema<TUser>(
       type: Number,
       required: true,
       default: 1
+    },
+    isVerified: {
+      type: Boolean,
+      default: false
     }
   },
   {

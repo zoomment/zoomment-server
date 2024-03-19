@@ -22,9 +22,14 @@ export const auth = (): RequestHandler => {
         id: string;
       };
 
-      // TODO check expiration date
-      req.user = await User.findById(decoded.id);
+      const user = await User.findById(decoded.id);
 
+      if (user && !user.isVerified) {
+        user.isVerified = true;
+        await user.save();
+      }
+
+      req.user = user;
       next();
     } catch (e) {
       next();

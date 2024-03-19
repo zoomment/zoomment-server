@@ -3,4 +3,5 @@ export type TUser = {
   id: string;
   email: string;
   role: number;
+  isVerified: boolean;
 };
