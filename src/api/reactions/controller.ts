@@ -12,7 +12,8 @@ export const add = asyncRoute(async (req, res) => {
   const url = new URL('https://' + pageId);
 
   if (!fingerprint) {
-    return res.status(500).send('Fingerprint required for reacting.');
+    res.status(500).send('Fingerprint required for reacting.');
+    return;
   }
 
   const searchCondition = { pageId, fingerprint, domain: url.hostname };
@@ -31,7 +32,7 @@ export const add = asyncRoute(async (req, res) => {
 
   const reactions = await getPageData(searchCondition);
 
-  return res.status(200).json(reactions);
+  res.status(200).json(reactions);
 });
 
 export const list = asyncRoute(async (req, res) => {
@@ -41,5 +42,5 @@ export const list = asyncRoute(async (req, res) => {
 
   const reactions = await getPageData({ pageId, fingerprint });
 
-  return res.status(200).json(reactions);
+  res.status(200).json(reactions);
 });
