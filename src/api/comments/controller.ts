@@ -57,6 +57,9 @@ export const list = asyncRoute(async (req, res) => {
     query.pageId = req.query.pageId;
   } else if (req.query.domain) {
     query.domain = req.query.domain;
+  } else {
+    res.status(400).json({ message: 'Bad request' });
+    return;
   }
 
   const comments = await Comment.find(query).sort({ createdAt: 'asc' });
