@@ -14,15 +14,23 @@ import {
 import jwt from 'jsonwebtoken';
 import { getCommentPublicData, createCommentData } from './helper';
 
+const DEFAULT_LIMIT = 10;
+const MAX_LIMIT = 50;
+
+// Helper to parse pagination params
+const getPagination = (query: { limit?: string; skip?: string }) => {
+  const limit = Math.min(parseInt(query.limit || '') || DEFAULT_LIMIT, MAX_LIMIT);
+  const skip = parseInt(query.skip || '') || 0;
+  return { limit, skip };
+};
+
 export const add = asyncRoute(async (req, res) => {
-  // Validate input
   const result = commentSchema.safeParse(req.body);
   if (!result.success) {
     const errors = result.error.issues.map((e: { message: string }) => e.message);
     throw new BadRequestError(errors.join(', '));
   }
 
-  // Sanitize the comment body
   const sanitizedBody = {
     ...result.data,
     body: sanitizeCommentBody(result.data.body)
@@ -36,7 +44,6 @@ export const add = asyncRoute(async (req, res) => {
   // Send confirmation email to guest
   if (!req.user) {
     let user = await User.findOne({ email: data.email });
-
     if (!user) {
       user = await User.create({ email: data.email, name: data.author });
     }
@@ -54,46 +61,83 @@ export const add = asyncRoute(async (req, res) => {
     });
   }
 
-  // Send an email notification to the site owner about a new comment
+  // Notify site owner
   const site = await Site.findOne({ domain: data.domain });
-
   if (!site) return;
 
   const siteOwner = await User.findById(site.userId);
-
   if (siteOwner && siteOwner.email !== data.email) {
     mailer.sendCommentNotification(siteOwner.email, comment);
   }
 });
 
+/**
+ * GET /comments?pageId=xxx&limit=10&skip=0
+ * Returns parent comments only, with repliesCount for each
+ */
 export const list = asyncRoute(async (req, res) => {
-  // Build base query for filtering by pageId or domain
-  const baseQuery: { pageId?: string; domain?: string } = {};
+  const pageId = req.query.pageId as string;
+  const domain = req.query.domain as string;
 
-  if (req.query.pageId) {
-    baseQuery.pageId = req.query.pageId as string;
-  } else if (req.query.domain) {
-    baseQuery.domain = req.query.domain as string;
-  } else {
+  if (!pageId && !domain) {
     throw new BadRequestError('pageId or domain is required');
   }
 
-  // Fetch all comments (both parents and replies) in a single query
-  const allComments = await Comment.find(baseQuery).sort({ createdAt: 'asc' });
+  const { limit, skip } = getPagination(req.query as { limit?: string; skip?: string });
+  const filter = pageId ? { pageId, parentId: null } : { domain, parentId: null };
 
-  // Separate parent comments and replies
-  const parentComments = allComments.filter(c => !c.parentId);
-  const replies = allComments.filter(c => c.parentId);
+  // Get parent comments
+  const [comments, total] = await Promise.all([
+    Comment.find(filter).sort({ createdAt: 'asc' }).skip(skip).limit(limit),
+    Comment.countDocuments(filter)
+  ]);
 
-  // Map parent comments with their replies
-  const commentsWithReplies = parentComments.map(comment => ({
+  // Get reply counts for each comment
+  const commentIds = comments.map(c => String(c._id));
+  const replyCounts = await Comment.aggregate([
+    { $match: { parentId: { $in: commentIds } } },
+    { $group: { _id: '$parentId', count: { $sum: 1 } } }
+  ]);
+
+  const replyCountMap = new Map(replyCounts.map(r => [r._id, r.count]));
+
+  const result = comments.map(comment => ({
     ...getCommentPublicData(comment, req.user ?? undefined),
-    replies: replies
-      .filter(r => String(r.parentId) === String(comment._id))
-      .map(r => getCommentPublicData(r, req.user ?? undefined))
+    repliesCount: replyCountMap.get(String(comment._id)) || 0
   }));
 
-  res.json(commentsWithReplies);
+  res.json({
+    comments: result,
+    total,
+    limit,
+    skip,
+    hasMore: skip + comments.length < total
+  });
+});
+
+/**
+ * GET /comments/:commentId/replies?limit=10&skip=0
+ * Returns replies for a specific parent comment
+ */
+export const listReplies = asyncRoute(async (req, res) => {
+  const { commentId } = req.params;
+  const { limit, skip } = getPagination(req.query as { limit?: string; skip?: string });
+
+  const [replies, total] = await Promise.all([
+    Comment.find({ parentId: commentId })
+      .sort({ createdAt: 'asc' })
+      .skip(skip)
+      .limit(limit),
+    Comment.countDocuments({ parentId: commentId })
+  ]);
+
+  res.json({
+    replies: replies.map(r => getCommentPublicData(r, req.user ?? undefined)),
+    total,
+    limit,
+    skip,
+    hasMore: skip + replies.length < total
+  });
 });
 
 export const remove = asyncRoute(async (req, res) => {
@@ -103,9 +147,7 @@ export const remove = asyncRoute(async (req, res) => {
     email?: string;
   }
 
-  const query: DeleteQuery = {
-    _id: req.params.id
-  };
+  const query: DeleteQuery = { _id: req.params.id };
 
   if (req.query.secret) {
     query.secret = req.query.secret as string;
@@ -125,16 +167,27 @@ export const remove = asyncRoute(async (req, res) => {
 });
 
 export const listBySiteId = asyncRoute(async (req, res) => {
-  const siteId = req.params.siteId;
-  const site = await Site.findById(siteId);
+  const site = await Site.findById(req.params.siteId);
 
   if (!site || !req.user || String(site.userId) !== String(req.user.id)) {
     throw new NotFoundError('Site not found');
   }
 
-  const comments = await Comment.find({ domain: site.domain }).sort({
-    createdAt: 'desc'
-  });
+  const { limit, skip } = getPagination(req.query as { limit?: string; skip?: string });
 
-  res.status(200).json(comments);
+  const [comments, total] = await Promise.all([
+    Comment.find({ domain: site.domain })
+      .sort({ createdAt: 'desc' })
+      .skip(skip)
+      .limit(limit),
+    Comment.countDocuments({ domain: site.domain })
+  ]);
+
+  res.json({
+    comments,
+    total,
+    limit,
+    skip,
+    hasMore: skip + comments.length < total
+  });
 });
