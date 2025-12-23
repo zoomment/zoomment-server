@@ -6,9 +6,11 @@ import express, { ErrorRequestHandler } from 'express';
 import http from 'http';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
+import swaggerUi from 'swagger-ui-express';
 import api from './api';
 import { migrate } from './migrations';
 import { AppError } from '@/utils';
+import { swaggerSpec } from './services/swagger';
 
 // Validate required environment variables
 const requiredEnvVars = ['JWT_SECRET', 'MONGODB_URI'];
@@ -64,6 +66,22 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Swagger documentation
+app.use(
+  '/docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'Zoomment API Docs'
+  })
+);
+
+// Swagger JSON endpoint
+app.get('/docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
 app.use('/api', api);
 
 // Error handler
@@ -87,6 +105,7 @@ const server = http.createServer(app);
 setImmediate(() => {
   server.listen(process.env.PORT, () => {
     console.log('Express server listening on http://localhost:%s/', process.env.PORT);
+    console.log('API Docs available at http://localhost:%s/docs', process.env.PORT);
   });
 });
 
