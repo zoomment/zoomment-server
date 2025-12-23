@@ -1,11 +1,12 @@
 import { Document, Schema } from 'mongoose';
 
-export type TSite = Document & {
+export type TReaction = Document & {
   id: string;
   _id: Schema.Types.ObjectId;
+  fingerprint: string;
   domain: string;
-  verified: boolean;
-  userId: Schema.Types.ObjectId;
+  pageId: string;
+  reaction: string;
   createdAt: Date;
   updatedAt: Date;
 };

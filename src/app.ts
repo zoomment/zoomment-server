@@ -5,12 +5,45 @@ import bodyParser from 'body-parser';
 import express, { ErrorRequestHandler } from 'express';
 import http from 'http';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import api from './api';
 import { migrate } from './migrations';
+import { AppError } from '@/utils';
+
+// Validate required environment variables
+const requiredEnvVars = ['JWT_SECRET', 'MONGODB_URI'];
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    console.error(`Missing required environment variable: ${envVar}`);
+    process.exit(1);
+  }
+}
+
+if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
+  console.error('JWT_SECRET must be at least 32 characters');
+  process.exit(1);
+}
 
 const app = express();
 
 mongoose.connect(process.env.MONGODB_URI || '');
+
+// Rate limiting
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per window
+  message: { message: 'Too many requests, please try again later' },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 auth requests per window
+  message: { message: 'Too many authentication attempts, please try again later' },
+  standardHeaders: true,
+  legacyHeaders: false
+});
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -18,15 +51,37 @@ app.use(cookieParser());
 app.use(cors());
 app.use(auth());
 
+// Apply rate limiting
+app.use('/api', generalLimiter);
+app.use('/api/users/auth', authLimiter);
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 app.use('/api', api);
 
+// Error handler
 // eslint-disable-next-line no-unused-vars
-app.use(<ErrorRequestHandler>function (err, req, res, next) {
-  console.log(err);
-  const errorMessage = err.message || 'Something is wrong!';
-  const errorStatue = err.status || 400;
-  res.status(errorStatue).send({ message: errorMessage });
-});
+const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
+  console.error(err);
+
+  if (err instanceof AppError) {
+    res.status(err.statusCode).json({ message: err.message });
+    return;
+  }
+
+  const errorMessage = err.message || 'Something went wrong!';
+  const errorStatus = err.status || 500;
+  res.status(errorStatus).json({ message: errorMessage });
+};
+
+app.use(errorHandler);
 
 const server = http.createServer(app);
 setImmediate(() => {
@@ -38,10 +93,12 @@ setImmediate(() => {
 if (process.env.MIGRATION) {
   migrate()
     .then(() => {
-      throw new Error('Migration complied');
+      console.log('Migration completed successfully');
+      process.exit(0);
     })
     .catch(e => {
-      throw new Error(e);
+      console.error('Migration failed:', e);
+      process.exit(1);
     });
 }
 

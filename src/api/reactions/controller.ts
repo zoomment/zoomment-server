@@ -1,31 +1,41 @@
 import Reaction from './model';
 import { getPageData } from './helper';
 import { asyncRoute } from '@/services/express';
+import { reactionSchema, BadRequestError, sanitizeText } from '@/utils';
 
 export const add = asyncRoute(async (req, res) => {
-  // TODO add validation
-  const fingerprint: string = req.headers.fingerprint as string;
-  const pageId = req.body.pageId || req.query.pageId;
-  const reaction = req.body.reaction.slice(0, 20); // Just in case, limit characters by 20
+  // Validate input
+  const result = reactionSchema.safeParse({
+    pageId: req.body.pageId || req.query.pageId,
+    reaction: req.body.reaction
+  });
 
-  // TODO remove after migration
+  if (!result.success) {
+    const errors = result.error.issues.map((e: { message: string }) => e.message);
+    throw new BadRequestError(errors.join(', '));
+  }
+
+  const fingerprint: string = req.headers.fingerprint as string;
+  const { pageId, reaction } = result.data;
+  const sanitizedReaction = sanitizeText(reaction);
+
+  // Extract domain from pageId
   const url = new URL('https://' + pageId);
 
   if (!fingerprint) {
-    res.status(500).send('Fingerprint required for reacting.');
-    return;
+    throw new BadRequestError('Fingerprint required for reacting');
   }
 
   const searchCondition = { pageId, fingerprint, domain: url.hostname };
   const recordInDB = await Reaction.findOne(searchCondition);
 
   if (!recordInDB) {
-    await Reaction.create({ ...searchCondition, reaction });
+    await Reaction.create({ ...searchCondition, reaction: sanitizedReaction });
   } else {
-    if (recordInDB.reaction === reaction) {
+    if (recordInDB.reaction === sanitizedReaction) {
       await Reaction.deleteOne({ _id: recordInDB.id });
     } else {
-      recordInDB.reaction = reaction;
+      recordInDB.reaction = sanitizedReaction;
       await recordInDB.save();
     }
   }
@@ -36,9 +46,12 @@ export const add = asyncRoute(async (req, res) => {
 });
 
 export const list = asyncRoute(async (req, res) => {
-  // TODO add validation
   const fingerprint: string = req.headers.fingerprint as string;
-  const pageId = req.body.pageId || req.query.pageId;
+  const pageId = (req.body.pageId || req.query.pageId) as string;
+
+  if (!pageId) {
+    throw new BadRequestError('pageId is required');
+  }
 
   const reactions = await getPageData({ pageId, fingerprint });
 

@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-const dayjs = require('dayjs');
+import dayjs from 'dayjs';
 import { TComment } from '@/types';
 import { generateTemplate } from './template';
 

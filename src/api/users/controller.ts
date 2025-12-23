@@ -3,11 +3,17 @@ import Sites from '../sites/model';
 import jwt from 'jsonwebtoken';
 import { asyncRoute } from '@/services/express';
 import { sendMagicLink } from '@/services/mailer';
-import { cleanEmail } from '@/utils';
+import { cleanEmail, authSchema, BadRequestError, NotFoundError } from '@/utils';
 
 export const auth = asyncRoute(async (req, res) => {
-  // TODO add validation
-  const email = cleanEmail(req.body.email);
+  // Validate input
+  const result = authSchema.safeParse(req.body);
+  if (!result.success) {
+    const errors = result.error.issues.map((e: { message: string }) => e.message);
+    throw new BadRequestError(errors.join(', '));
+  }
+
+  const email = cleanEmail(result.data.email);
 
   let user = await User.findOne({ email });
 
@@ -23,10 +29,14 @@ export const auth = asyncRoute(async (req, res) => {
 
   await sendMagicLink(user.email, token);
 
-  res.json({});
+  res.json({ message: 'Magic link sent to your email' });
 });
 
 export const profile = asyncRoute(async (req, res) => {
+  if (!req.user) {
+    throw new BadRequestError('User not authenticated');
+  }
+
   const user = req.user;
 
   res.json({
@@ -37,6 +47,10 @@ export const profile = asyncRoute(async (req, res) => {
 });
 
 export const remove = asyncRoute(async (req, res) => {
+  if (!req.user) {
+    throw new BadRequestError('User not authenticated');
+  }
+
   const userId = req.user.id;
   const { deletedCount } = await User.deleteOne({ _id: userId });
 
@@ -45,6 +59,6 @@ export const remove = asyncRoute(async (req, res) => {
   if (deletedCount > 0) {
     res.status(200).json({ _id: userId });
   } else {
-    res.status(404).json({ message: 'Account not found' });
+    throw new NotFoundError('Account not found');
   }
 });

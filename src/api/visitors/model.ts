@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
-import { TReaction } from '@/types';
+import { TVisitor } from '@/types';
 
-const schema = new Schema<TReaction>(
+const schema = new Schema<TVisitor>(
   {
     fingerprint: {
       type: String,
@@ -14,9 +14,6 @@ const schema = new Schema<TReaction>(
     pageId: {
       type: String,
       required: true
-    },
-    reaction: {
-      type: String
     }
   },
   {
@@ -25,9 +22,10 @@ const schema = new Schema<TReaction>(
 );
 
 // Add indexes for better query performance
-schema.index({ pageId: 1, fingerprint: 1 });
+schema.index({ pageId: 1, fingerprint: 1 }, { unique: true });
 schema.index({ domain: 1 });
+schema.index({ pageId: 1 });
 
-const model = mongoose.model('Reaction', schema);
+const model = mongoose.model('Visitor', schema);
 
 export default model;

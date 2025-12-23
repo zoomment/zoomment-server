@@ -1,11 +1,24 @@
 import { TComment, TUser } from '@/types';
-import { cleanEmail, cleanName } from '@/utils';
+import { cleanEmail, cleanName, sanitizeText, sanitizeCommentBody } from '@/utils';
 import crypto from 'crypto';
 
-export const createCommentData = (obj: any, user?: TUser) => {
+interface CommentInput {
+  pageUrl: string;
+  email?: string;
+  author?: string;
+  owner?: {
+    email: string;
+    name: string;
+  };
+  parentId?: string;
+  body: string;
+  pageId: string;
+}
+
+export const createCommentData = (obj: CommentInput, user?: TUser) => {
   const url = new URL(obj.pageUrl);
-  const email = cleanEmail(obj.email || obj?.owner.email || '');
-  const author = cleanName(obj.author || obj?.owner.name || '');
+  const email = cleanEmail(obj.email || obj?.owner?.email || '');
+  const author = sanitizeText(cleanName(obj.author || obj?.owner?.name || ''));
   const parentId = obj.parentId;
   const domain = url.hostname;
   const gravatar = crypto.createHash('md5').update(email).digest('hex');
@@ -13,14 +26,12 @@ export const createCommentData = (obj: any, user?: TUser) => {
   const isVerified = user && user.email === email;
 
   const data = {
-    body: obj.body,
-    // owner field deprecated
-    owner: { name: author, email, gravatar },
-    parentId,
-    gravatar,
+    body: sanitizeCommentBody(obj.body),
     author,
     email,
     domain,
+    gravatar,
+    parentId,
     isVerified,
     pageUrl: url.href,
     pageId: obj.pageId,
@@ -36,10 +47,6 @@ export const getCommentPublicData = (comment: TComment, user?: TUser) => {
 
   return {
     _id: obj._id,
-    owner: {
-      name: obj.author,
-      gravatar: obj.gravatar
-    },
     isOwn,
     body: obj.body,
     author: obj.author,

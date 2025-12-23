@@ -13,13 +13,18 @@ const schema = new Schema<TSite>(
     },
     userId: {
       type: Schema.Types.ObjectId,
-      required: true
+      required: true,
+      ref: 'User'
     }
   },
   {
     timestamps: true
   }
 );
+
+// Add indexes for better query performance
+schema.index({ userId: 1 });
+schema.index({ domain: 1 }, { unique: true });
 
 const model = mongoose.model('Site', schema);
 export default model;

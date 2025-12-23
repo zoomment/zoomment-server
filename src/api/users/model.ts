@@ -26,5 +26,8 @@ const schema = new Schema<TUser>(
   }
 );
 
+// Add index for email lookups
+schema.index({ email: 1 }, { unique: true });
+
 const model = mongoose.model('User', schema);
 export default model;

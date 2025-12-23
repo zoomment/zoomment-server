@@ -3,25 +3,6 @@ import { TComment } from '@/types';
 
 const schema = new Schema<TComment>(
   {
-    // owner field deprecated
-    owner: {
-      ip: {
-        type: String,
-        required: false
-      },
-      gravatar: {
-        type: String,
-        required: false
-      },
-      email: {
-        type: String,
-        required: true
-      },
-      name: {
-        type: String,
-        required: true
-      }
-    },
     parentId: {
       type: String,
       required: false,
@@ -68,6 +49,11 @@ const schema = new Schema<TComment>(
     timestamps: true
   }
 );
+
+// Add indexes for better query performance
+schema.index({ pageId: 1, parentId: 1 });
+schema.index({ domain: 1, createdAt: -1 });
+schema.index({ email: 1 });
 
 const model = mongoose.model('Comment', schema);
 export default model;
