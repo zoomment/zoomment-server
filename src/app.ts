@@ -28,6 +28,9 @@ if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 15) {
 
 const app = express();
 
+// Trust proxy - required for express-rate-limit to work correctly behind reverse proxies
+app.set('trust proxy', 1);
+
 mongoose.connect(process.env.MONGODB_URI || '');
 
 // Rate limiting
