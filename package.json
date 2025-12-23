@@ -1,8 +1,5 @@
 {
   "name": "zoomment-server",
-  "_moduleAliases": {
-    "@": "dist/src"
-  },
   "version": "1.0.0",
   "description": "Open Source Self-Hosted Comment System",
   "main": "./index.ts",
@@ -12,7 +9,7 @@
     "start:only": "pm2 start ./dist/ecosystem.config.js",
     "restart": "npm run build && pm2 restart ZOOMMENT",
     "kill": "pm2 delete ZOOMMENT",
-    "build": "tsc && tsc-alias",
+    "build": "tsup && cp ecosystem.config.js dist/",
     "lint": "eslint src/**/*.ts --fix",
     "prettier": "npx prettier ./ --check",
     "prettier:fix": "npm run prettier -- --write",
@@ -41,7 +38,6 @@
     "express": "^4.17.1",
     "express-rate-limit": "^8.2.1",
     "jsonwebtoken": "^9.0.2",
-    "module-alias": "^2.2.3",
     "mongoose": "^8.8.0",
     "nodemailer": "^7.0.12",
     "sanitize-html": "^2.17.0",
@@ -69,8 +65,9 @@
     "pm2": "^5.4.3",
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
-    "tsc-alias": "^1.8.8",
     "tsconfig-paths": "^4.2.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.3.3"
   }
 }
