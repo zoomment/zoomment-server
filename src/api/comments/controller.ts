@@ -66,39 +66,30 @@ export const add = asyncRoute(async (req, res) => {
   }
 });
 
-interface CommentListQuery {
-  parentId: string | null;
-  pageId?: string;
-  domain?: string;
-}
-
 export const list = asyncRoute(async (req, res) => {
-  const query: CommentListQuery = {
-    parentId: null
-  };
+  // Build base query for filtering by pageId or domain
+  const baseQuery: { pageId?: string; domain?: string } = {};
 
   if (req.query.pageId) {
-    query.pageId = req.query.pageId as string;
+    baseQuery.pageId = req.query.pageId as string;
   } else if (req.query.domain) {
-    query.domain = req.query.domain as string;
+    baseQuery.domain = req.query.domain as string;
   } else {
     throw new BadRequestError('pageId or domain is required');
   }
 
-  // Fetch all comments in a single query to avoid N+1
-  const allComments = await Comment.find({
-    $or: [{ ...query }, { domain: query.domain, parentId: { $ne: null } }]
-  }).sort({ createdAt: 'asc' });
+  // Fetch all comments (both parents and replies) in a single query
+  const allComments = await Comment.find(baseQuery).sort({ createdAt: 'asc' });
 
-  console.log('allComments', allComments);
-
+  // Separate parent comments and replies
   const parentComments = allComments.filter(c => !c.parentId);
   const replies = allComments.filter(c => c.parentId);
 
+  // Map parent comments with their replies
   const commentsWithReplies = parentComments.map(comment => ({
     ...getCommentPublicData(comment, req.user ?? undefined),
     replies: replies
-      .filter(r => r.parentId === comment.id)
+      .filter(r => String(r.parentId) === String(comment._id))
       .map(r => getCommentPublicData(r, req.user ?? undefined))
   }));
 
