@@ -432,21 +432,30 @@ const options: swaggerJsdoc.Options = {
       '/visitors/domain': {
         get: {
           tags: ['Visitors'],
-          summary: 'Get visitor stats for a domain',
+          summary: 'Get page view counts by pageId for a domain',
           parameters: [
             { name: 'domain', in: 'query', required: true, schema: { type: 'string' } }
           ],
           responses: {
             200: {
-              description: 'Domain visitor stats',
+              description:
+                'Page view counts grouped by pageId, sorted by most viewed first',
               content: {
                 'application/json': {
                   schema: {
                     type: 'object',
                     properties: {
-                      domain: { type: 'string' },
-                      count: { type: 'number' },
-                      uniquePages: { type: 'number' }
+                      domain: { type: 'string', example: 'example.com' },
+                      pages: {
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          properties: {
+                            pageId: { type: 'string', example: 'example.com/post/1' },
+                            count: { type: 'number', example: 150 }
+                          }
+                        }
+                      }
                     }
                   }
                 }

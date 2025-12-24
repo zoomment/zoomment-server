@@ -70,15 +70,16 @@ export const countByDomain = asyncRoute(async (req, res) => {
     throw new BadRequestError('domain is required');
   }
 
-  // Get total unique visitors for the domain
-  const visitorCount = await Visitor.countDocuments({ domain });
-
-  // Get unique pages count
-  const uniquePages = await Visitor.distinct('pageId', { domain });
+  // Get page view counts grouped by pageId, sorted by most viewed first
+  const pageViewCounts = await Visitor.aggregate([
+    { $match: { domain } },
+    { $group: { _id: '$pageId', count: { $sum: 1 } } },
+    { $sort: { count: -1 } },
+    { $project: { pageId: '$_id', count: 1, _id: 0 } }
+  ]);
 
   res.status(200).json({
     domain,
-    count: visitorCount,
-    uniquePages: uniquePages.length
+    pages: pageViewCounts
   });
 });
