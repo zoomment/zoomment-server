@@ -72,12 +72,13 @@ export const add = asyncRoute(async (req, res) => {
 });
 
 /**
- * GET /comments?pageId=xxx&limit=10&skip=0
+ * GET /comments?pageId=xxx&limit=10&skip=0&sort=asc|desc
  * Returns parent comments only, with repliesCount for each
  */
 export const list = asyncRoute(async (req, res) => {
   const pageId = req.query.pageId as string;
   const domain = req.query.domain as string;
+  const sortOrder = req.query.sort === 'desc' ? 'desc' : 'asc';
 
   if (!pageId && !domain) {
     throw new BadRequestError('pageId or domain is required');
@@ -88,7 +89,7 @@ export const list = asyncRoute(async (req, res) => {
 
   // Get parent comments
   const [comments, total] = await Promise.all([
-    Comment.find(filter).sort({ createdAt: 'asc' }).skip(skip).limit(limit),
+    Comment.find(filter).sort({ createdAt: sortOrder }).skip(skip).limit(limit),
     Comment.countDocuments(filter)
   ]);
 

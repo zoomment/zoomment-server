@@ -173,6 +173,12 @@ const options: swaggerJsdoc.Options = {
               in: 'query',
               schema: { type: 'number', default: 0 },
               description: 'Number of comments to skip'
+            },
+            {
+              name: 'sort',
+              in: 'query',
+              schema: { type: 'string', enum: ['asc', 'desc'], default: 'asc' },
+              description: 'Sort order by date: asc (oldest first) or desc (newest first)'
             }
           ],
           responses: {
