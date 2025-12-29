@@ -22,7 +22,7 @@ export const auth = asyncRoute(async (req, res) => {
   }
 
   const token = jwt.sign(
-    { id: user.id, email: user.email, name: user.name },
+    { id: user.id, email: user.email, name: user.name, role: user.role },
     process.env.JWT_SECRET as string,
     { expiresIn: '1y', algorithm: 'HS256' }
   );
@@ -42,8 +42,14 @@ export const profile = asyncRoute(async (req, res) => {
   res.json({
     name: user.name,
     email: user.email,
-    id: user.id
+    id: user.id,
+    role: user.role
   });
+});
+
+export const getAll = asyncRoute(async (req, res) => {
+  const users = await User.find();
+  res.json(users);
 });
 
 export const remove = asyncRoute(async (req, res) => {
