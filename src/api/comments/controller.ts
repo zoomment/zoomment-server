@@ -49,7 +49,7 @@ export const add = asyncRoute(async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, email: data.email, name: data.author },
+      { id: user.id, email: data.email, name: data.author, role: user.role },
       process.env.JWT_SECRET as string,
       { expiresIn: '1y', algorithm: 'HS256' }
     );

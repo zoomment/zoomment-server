@@ -48,7 +48,7 @@ export const profile = asyncRoute(async (req, res) => {
 });
 
 export const getAll = asyncRoute(async (req, res) => {
-  const users = await User.find();
+  const users = await User.find({ isVerified: true });
   res.json(users);
 });
 
